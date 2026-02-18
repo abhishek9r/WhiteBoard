@@ -11,4 +11,5 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/whiteboard-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xmx400m", "-jar", "app.jar"]
+# Use shell form so $PORT is expanded at runtime (Railway sets PORT dynamically)
+CMD java -Xmx400m -Dserver.port=${PORT:-8080} -jar app.jar
