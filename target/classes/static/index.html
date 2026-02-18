@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LiveBoard — Real-Time Collaborative Whiteboard</title>
+    <meta name="description" content="A real-time collaborative whiteboard. Draw together with your team, instantly." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Sidebar Toolbar ─────────────────────────────────────────── -->
+<aside class="toolbar" id="toolbar">
+
+    <div class="toolbar-brand">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="8" fill="url(#brandGrad)"/>
+            <path d="M7 20L12 10L17 16L20 12L23 20H7Z" fill="white" opacity="0.9"/>
+            <defs>
+                <linearGradient id="brandGrad" x1="0" y1="0" x2="28" y2="28">
+                    <stop offset="0%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+            </defs>
+        </svg>
+        <span class="brand-name">LiveBoard</span>
+    </div>
+
+    <!-- Tools -->
+    <div class="toolbar-section">
+        <p class="section-label">Tools</p>
+        <div class="tool-group">
+            <button class="tool-btn active" id="tool-pen" title="Pen (P)" data-tool="pen">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                <span>Pen</span>
+            </button>
+            <button class="tool-btn" id="tool-eraser" title="Eraser (E)" data-tool="eraser">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 20H7L3 16l11-11 6 6-3.5 3.5"/>
+                    <path d="M6.5 17.5l4-4"/>
+                </svg>
+                <span>Eraser</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Colors -->
+    <div class="toolbar-section">
+        <p class="section-label">Color</p>
+        <div class="color-grid" id="colorGrid">
+            <button class="color-swatch active" style="--c:#1e1e2e" data-color="#1e1e2e" title="Charcoal"></button>
+            <button class="color-swatch" style="--c:#ef4444" data-color="#ef4444" title="Red"></button>
+            <button class="color-swatch" style="--c:#f97316" data-color="#f97316" title="Orange"></button>
+            <button class="color-swatch" style="--c:#eab308" data-color="#eab308" title="Yellow"></button>
+            <button class="color-swatch" style="--c:#22c55e" data-color="#22c55e" title="Green"></button>
+            <button class="color-swatch" style="--c:#06b6d4" data-color="#06b6d4" title="Cyan"></button>
+            <button class="color-swatch" style="--c:#6366f1" data-color="#6366f1" title="Indigo"></button>
+            <button class="color-swatch" style="--c:#ec4899" data-color="#ec4899" title="Pink"></button>
+            <button class="color-swatch" style="--c:#ffffff" data-color="#ffffff" title="White" style="border: 1px solid #ccc"></button>
+        </div>
+        <div class="custom-color-row">
+            <label for="customColor" class="section-label" style="margin:0">Custom</label>
+            <input type="color" id="customColor" value="#1e1e2e" title="Pick custom color" />
+        </div>
+    </div>
+
+    <!-- Brush Size -->
+    <div class="toolbar-section">
+        <p class="section-label">Size <span id="sizeLabel" class="size-label">4px</span></p>
+        <input type="range" id="brushSize" min="1" max="40" value="4" class="slider" />
+        <div class="size-preview-row">
+            <div class="size-dot" style="width:4px;height:4px" data-size="4"></div>
+            <div class="size-dot" style="width:8px;height:8px" data-size="8"></div>
+            <div class="size-dot" style="width:16px;height:16px" data-size="16"></div>
+            <div class="size-dot" style="width:28px;height:28px" data-size="28"></div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="toolbar-section" style="margin-top:auto">
+        <p class="section-label">Actions</p>
+        <button class="action-btn" id="btn-undo" title="Undo last stroke (Ctrl+Z)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 7v6h6M3.51 13A9 9 0 1021 12"/>
+            </svg>
+            Undo
+        </button>
+        <button class="action-btn danger" id="btn-clear" title="Clear board for everyone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/>
+            </svg>
+            Clear All
+        </button>
+    </div>
+
+</aside>
+
+<!-- ── Main Canvas Area ────────────────────────────────────────── -->
+<main class="canvas-area">
+
+    <!-- Status Bar -->
+    <header class="status-bar">
+        <div class="status-left">
+            <span class="status-dot" id="statusDot"></span>
+            <span class="status-text" id="statusText">Connecting…</span>
+        </div>
+        <div class="status-right">
+            <span class="participant-badge" id="participantBadge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                </svg>
+                <span id="participantCount">1</span> online
+            </span>
+            <span class="cursor-pos" id="cursorPos">x: 0, y: 0</span>
+        </div>
+    </header>
+
+    <!-- Canvas -->
+    <div class="canvas-wrapper" id="canvasWrapper">
+        <canvas id="whiteboard"></canvas>
+        <div class="canvas-hint" id="canvasHint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40" opacity="0.4">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <p>Start drawing…</p>
+        </div>
+    </div>
+
+</main>
+
+<!-- ── Notification Toast ──────────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── Scripts ────────────────────────────────────────────────── -->
+<!-- SockJS + STOMP from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

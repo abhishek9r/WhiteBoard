@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: whiteboard_postgres
+    environment:
+      POSTGRES_DB: whiteboard_db
+      POSTGRES_USER: whiteboard_user
+      POSTGRES_PASSWORD: whiteboard_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - whiteboard_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U whiteboard_user -d whiteboard_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  whiteboard_pgdata:
+    driver: local

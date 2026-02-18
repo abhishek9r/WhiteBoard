@@ -1,0 +1,9 @@
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\controller\BoardRestController.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\model\StrokeDTO.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\WhiteboardApplication.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\model\Stroke.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\service\StrokeService.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\config\WebSocketConfig.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\controller\WhiteboardController.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\repository\StrokeRepository.java
+D:\Projects\Whiteboard\WhiteBoard\src\main\java\com\example\whiteboard\config\JacksonConfig.java

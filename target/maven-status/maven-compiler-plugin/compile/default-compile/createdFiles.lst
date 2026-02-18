@@ -1,0 +1,11 @@
+com\example\whiteboard\repository\StrokeRepository.class
+com\example\whiteboard\controller\WhiteboardController.class
+com\example\whiteboard\config\WebSocketConfig.class
+com\example\whiteboard\model\Stroke$StrokeBuilder.class
+com\example\whiteboard\model\StrokeDTO$StrokeDTOBuilder.class
+com\example\whiteboard\controller\BoardRestController.class
+com\example\whiteboard\service\StrokeService.class
+com\example\whiteboard\model\StrokeDTO.class
+com\example\whiteboard\WhiteboardApplication.class
+com\example\whiteboard\model\Stroke.class
+com\example\whiteboard\config\JacksonConfig.class
