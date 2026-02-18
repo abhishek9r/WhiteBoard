@@ -13,7 +13,8 @@
 - [Technology Stack](#-technology-stack)
 - [Data Flow](#-data-flow)
 - [Edge Case Handling & Optimizations](#-edge-case-handling--optimizations)
-- [Getting Started](#-getting-started)
+- [Running Locally](#-running-locally)
+- [Deployment (Free — Railway + Neon)](#-deployment-free--railway--neon)
 - [API Reference](#-api-reference)
 - [Performance Benchmarks](#-performance-benchmarks)
 
@@ -237,36 +238,104 @@ This section details how LiveBoard handles real-world failure scenarios and perf
 
 ---
 
-## 🚀 Getting Started
+## 💻 Running Locally
 
 ### Prerequisites
 
-- Java 17+
-- Maven 3.8+
-- Docker & Docker Compose
+- [Java 17+](https://adoptium.net/temurin/releases/?version=17)
+- [Maven 3.8+](https://maven.apache.org/download.cgi)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for local PostgreSQL)
 
-### 1. Start the Database
+### Step 1 — Start the Database
 
 ```bash
 docker-compose up -d
 ```
 
-This starts a PostgreSQL instance on port `5432` with:
-- **Database**: `whiteboard_db`
-- **Username**: `whiteboard_user`
-- **Password**: `whiteboard_pass`
+This starts a PostgreSQL container on port `5432` with:
 
-### 2. Run the Application
+| Setting | Value |
+|---|---|
+| Database | `whiteboard_db` |
+| Username | `whiteboard_user` |
+| Password | `whiteboard_pass` |
+
+Verify it's running:
+```bash
+docker ps
+# Should show: whiteboard_postgres
+```
+
+### Step 2 — Run the Application
 
 ```bash
 mvn spring-boot:run
 ```
 
-The server starts on `http://localhost:8080`.
+First run downloads dependencies (~2–3 min). Subsequent starts take ~5 seconds.
 
-### 3. Open the Whiteboard
+You should see:
+```
+Started WhiteboardApplication in X.XXX seconds
+```
 
-Open `http://localhost:8080` in **two or more browser tabs** and start drawing. Changes will appear in real-time across all tabs.
+### Step 3 — Open the Whiteboard
+
+Go to **`http://localhost:8080`** in your browser.
+
+To test multi-user collaboration, open the same URL in a **second tab or browser** — draw in one and watch it appear in the other in real-time ✨
+
+### Stopping
+
+```bash
+# Stop the Spring Boot server
+Ctrl+C
+
+# Stop the database
+docker-compose down
+
+# Stop the database AND delete all data
+docker-compose down -v
+```
+
+---
+
+## 🌍 Deployment (Free — Railway + Neon)
+
+Liveboard is deployed for free using:
+
+| Service | Role | Cost |
+|---|---|---|
+| **[Railway](https://railway.app)** | Hosts the Spring Boot app | Free ($5/month credit) |
+| **[Neon](https://neon.tech)** | Managed PostgreSQL | Free (0.5 GB, always-on) |
+| **GitHub** | Source + auto-deploy trigger | Free |
+
+### Environment Variables
+
+Set these in your Railway project's **Variables** tab:
+
+| Variable | Description | Example |
+|---|---|---|
+| `DATABASE_URL` | Neon JDBC connection string | `jdbc:postgresql://ep-xxx.neon.tech/neondb?sslmode=require` |
+| `DATABASE_USERNAME` | Neon database username | `neondb_owner` |
+| `DATABASE_PASSWORD` | Neon database password | `your-neon-password` |
+
+> **Note:** Neon shows connection strings as `postgres://...`. For Spring Boot, replace the prefix with `jdbc:postgresql://` and append `?sslmode=require`.
+
+### Deploy Steps
+
+1. **Neon** — Create a free project at [neon.tech](https://neon.tech) → copy the connection string
+2. **GitHub** — Push this repo to GitHub (already done)
+3. **Railway** — Create a new project → **Deploy from GitHub repo** → select this repo
+4. **Add env vars** — Paste the three variables above in Railway's Variables tab
+5. **Done!** Railway auto-builds via the `Dockerfile` and gives you a public URL
+
+### How Auto-Deploy Works
+
+Every `git push` to `main` triggers Railway to:
+1. Pull the latest code
+2. Build the Docker image (multi-stage: compile JAR → run with JRE)
+3. Deploy with zero-downtime swap
 
 ---
 
