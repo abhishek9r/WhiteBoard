@@ -14,7 +14,7 @@
 - [Data Flow](#-data-flow)
 - [Edge Case Handling & Optimizations](#-edge-case-handling--optimizations)
 - [Running Locally](#-running-locally)
-- [Deployment (Free — Railway + Neon)](#-deployment-free--railway--neon)
+- [Deployment (Free — Render + Neon)](#-deployment-free--render--neon)
 - [API Reference](#-api-reference)
 - [Performance Benchmarks](#-performance-benchmarks)
 
@@ -300,39 +300,45 @@ docker-compose down -v
 
 ---
 
-## 🌍 Deployment (Free — Railway + Neon)
+## 🌍 Deployment (Free — Render + Neon)
 
-Liveboard is deployed for free using:
+LiveBoard is deployed for free using:
 
 | Service | Role | Cost |
 |---|---|---|
-| **[Railway](https://railway.app)** | Hosts the Spring Boot app | Free ($5/month credit) |
+| **[Render](https://render.com)** | Hosts the Spring Boot app (Docker) | Free |
 | **[Neon](https://neon.tech)** | Managed PostgreSQL | Free (0.5 GB, always-on) |
 | **GitHub** | Source + auto-deploy trigger | Free |
 
+> **⏳ Cold Start Notice:** Render's free tier spins down the app after 15 minutes of inactivity. The **first request after idle may take up to 30 seconds** to respond while the container wakes up. Subsequent requests are instant.
+
 ### Environment Variables
 
-Set these in your Railway project's **Variables** tab:
+Set these in Render → your service → **Environment** tab:
 
-| Variable | Description | Example |
-|---|---|---|
-| `DATABASE_URL` | Neon JDBC connection string | `jdbc:postgresql://ep-xxx.neon.tech/neondb?sslmode=require` |
-| `DATABASE_USERNAME` | Neon database username | `neondb_owner` |
-| `DATABASE_PASSWORD` | Neon database password | `your-neon-password` |
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | `jdbc:postgresql://your-host.neon.tech/neondb?sslmode=require` |
+| `DATABASE_USERNAME` | your Neon username |
+| `DATABASE_PASSWORD` | your Neon password |
 
-> **Note:** Neon shows connection strings as `postgres://...`. For Spring Boot, replace the prefix with `jdbc:postgresql://` and append `?sslmode=require`.
+> **Note:** Get the JDBC connection string from Neon dashboard → **Connection Details → switch dropdown to "JDBC"**. The URL must start with `jdbc:postgresql://` (not `postgres://`). Keep credentials in separate variables, not embedded in the URL.
 
 ### Deploy Steps
 
-1. **Neon** — Create a free project at [neon.tech](https://neon.tech) → copy the connection string
-2. **GitHub** — Push this repo to GitHub (already done)
-3. **Railway** — Create a new project → **Deploy from GitHub repo** → select this repo
-4. **Add env vars** — Paste the three variables above in Railway's Variables tab
-5. **Done!** Railway auto-builds via the `Dockerfile` and gives you a public URL
+1. **Neon** — Create a free project at [neon.tech](https://neon.tech) → copy the JDBC connection string
+2. **Render** — Go to [render.com](https://render.com) → **New + → Web Service**
+3. **Connect repo** — Select `abhishek9r/WhiteBoard`, branch `main`
+4. **Configure:**
+   - Runtime: **Docker**
+   - Instance Type: **Free**
+   - Region: Singapore (or closest to you)
+5. **Add env vars** — Paste the three variables above
+6. **Create Web Service** — Render builds the Docker image and gives you a public URL
 
 ### How Auto-Deploy Works
 
-Every `git push` to `main` triggers Railway to:
+Every `git push` to `main` triggers Render to:
 1. Pull the latest code
 2. Build the Docker image (multi-stage: compile JAR → run with JRE)
 3. Deploy with zero-downtime swap
